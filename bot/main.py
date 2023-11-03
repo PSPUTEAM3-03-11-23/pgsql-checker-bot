@@ -1,17 +1,11 @@
 import datetime
-import logging
 import os
-import re
-from datetime import time, datetime
-from functools import wraps
-from time import sleep
+from datetime import datetime
 
-import pytz
-from sqlalchemy import select
-from telegram.ext import ApplicationBuilder, CommandHandler, CallbackContext, ContextTypes, ConversationHandler, \
+from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes, ConversationHandler, \
     MessageHandler
 
-from telegram import ForceReply, Update
+from telegram import Update
 from telegram.ext.filters import TEXT, COMMAND
 
 FIO, SECRET_CODE, INVITE_CODE = range(3)

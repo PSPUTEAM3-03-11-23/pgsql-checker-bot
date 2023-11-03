@@ -1,6 +1,6 @@
 from sqlalchemy import text
 
-from sql_alchemy.models import Session
+from bot.sql_alchemy import Session
 
 
 def show_backends(session):
