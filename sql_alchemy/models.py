@@ -6,7 +6,7 @@ from sqlalchemy.orm import declarative_base, relationship
 from sqlalchemy.orm import sessionmaker
 
 engine = create_engine(
-    f"postgresql+psycopg2://postgres:568219@{os.environ.get('DB_HOST', 'localhost')}/hackathon")
+    f"postgresql+psycopg2://postgres:pspu!Team@{os.environ.get('DB_HOST', '90.150.183.80:10100')}/hackathon")
 
 Base = declarative_base()
 Session = sessionmaker(bind=engine)
