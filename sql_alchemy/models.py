@@ -82,6 +82,7 @@ class UserSecret(Base):
     user_id = Column(ForeignKey('users.id', ondelete='CASCADE'))
     secret_code = Column(LargeBinary)
     salt = Column(LargeBinary)
+    is_organization_admin = Column(Boolean, default=False)
 
     organization = relationship("Organization", back_populates="user_secrets")
     user = relationship("User", back_populates="user_secrets")

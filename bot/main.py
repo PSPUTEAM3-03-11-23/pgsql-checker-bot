@@ -62,6 +62,8 @@ async def inviteInput(update: Update, context: ContextTypes.DEFAULT_TYPE):
         user_secret.user = user
         user_secret.organization_id = invite.organization_id
         user_secret.set_secret_code(update.message.text.encode())
+        user_secret.is_organization_admin = invite.is_organization_admin
+        invite.is_activated = True
         session.add(user)
         session.add(user_secret)
         session.commit()
