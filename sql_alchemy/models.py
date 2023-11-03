@@ -20,10 +20,10 @@ class User(Base):
     name = Column(String(255))
     is_deactivated = Column(Boolean)
 
-    user_secrets = relationship("UserSecret", backref='user', cascade="all, delete, delete-orphan")
-    organization_admins = relationship("OrganizationAdmin", backref='user', cascade="all, delete, delete-orphan")
-    user_db_subscribes = relationship("UserDBSubscriber", backref='user', cascade="all, delete, delete-orphan")
-    alerts = relationship("Alert", backref='user', cascade="all, delete, delete-orphan")
+    user_secrets = relationship("UserSecret", back_populates='user', cascade="all, delete, delete-orphan")
+    organization_admins = relationship("OrganizationAdmin", back_populates='user', cascade="all, delete, delete-orphan")
+    user_db_subscribers = relationship("UserDBSubscriber", back_populates='user', cascade="all, delete, delete-orphan")
+    alerts = relationship("Alert", back_populates='user', cascade="all, delete, delete-orphan")
 
     def __repr__(self):
         return f'{self.id} | {self.tg_id} | {self.name} | {self.is_deactivated}'
@@ -35,10 +35,12 @@ class Organization(Base):
     id = Column(Integer, primary_key=True)
     title = Column(String(255))
 
-    invite_codes = relationship("OrganizationInviteCode", backref='organization', cascade="all, delete, delete-orphan")
-    user_secrets = relationship("UserSecret", backref='organization', cascade="all, delete, delete-orphan")
-    dbs = relationship("DB", backref='organization', cascade="all, delete, delete-orphan")
-    organization_admins = relationship("OrganizationAdmin", backref='user', cascade="all, delete, delete-orphan")
+    invite_codes = relationship("OrganizationInviteCode", back_populates='organization',
+                                cascade="all, delete, delete-orphan")
+    user_secrets = relationship("UserSecret", back_populates='organization', cascade="all, delete, delete-orphan")
+    dbs = relationship("DB", back_populates='organization', cascade="all, delete, delete-orphan")
+    organization_admins = relationship("OrganizationAdmin", back_populates='organization',
+                                       cascade="all, delete, delete-orphan")
 
     def __repr__(self):
         return f'{self.id}|{self.title}'
@@ -59,7 +61,7 @@ class OrganizationInviteCode(Base):
     organization = relationship("Organization", back_populates="invite_codes")
 
     def __repr__(self):
-        return f'{self.id}|{self.organization.title}|{self.invitation_code}'
+        return f'{self.id}|{self.organization.title}|{self.invitation_code}|{self.expiration_date}'
 
 
 def get_hashed_password(plain_text_password, salt):
@@ -79,13 +81,14 @@ class UserSecret(Base):
     organization_id = Column(ForeignKey('organizations.id', ondelete='CASCADE'))
     user_id = Column(ForeignKey('users.id', ondelete='CASCADE'))
     secret_code = Column(LargeBinary)
-    salt = Column(LargeBinary, default=lambda: bcrypt.gensalt())
+    salt = Column(LargeBinary)
 
     organization = relationship("Organization", back_populates="user_secrets")
     user = relationship("User", back_populates="user_secrets")
 
     def set_secret_code(self, new_pass):
         """Salt/Hash and save the user's new password."""
+        self.salt = bcrypt.gensalt()
         new_password_hash = get_hashed_password(new_pass, self.salt)
         self.secret_code = new_password_hash
 
@@ -95,6 +98,7 @@ class UserSecret(Base):
 
 class OrganizationAdmin(Base):
     __tablename__ = 'organization_admins'
+
     id = Column(Integer, primary_key=True)
     user_id = Column(ForeignKey('users.id', ondelete='CASCADE'))
     organization_id = Column(ForeignKey('organizations.id', ondelete='CASCADE'))
@@ -107,7 +111,7 @@ class OrganizationAdmin(Base):
 
 
 class UserDBSubscriber(Base):
-    __tablename__ = 'user_db_subscribes'
+    __tablename__ = 'user_db_subscribers'
 
     id = Column(Integer, primary_key=True)
     user_id = Column(ForeignKey('users.id', ondelete='CASCADE'))
@@ -129,10 +133,10 @@ class DB(Base):
     schema = Column(String(255))
     title = Column(String(255))
     organization_id = Column(ForeignKey('organizations.id', ondelete='CASCADE'))
+    organization = relationship("Organization", back_populates="dbs")
 
-    organization = relationship("Organization", back_populates="invite_codes")
-    user_db_subscribes = relationship("UserDBSubscriber", backref='user', cascade="all, delete, delete-orphan")
-    incidents = relationship("Incident", backref='db', cascade="all, delete, delete-orphan")
+    user_db_subscribers = relationship("UserDBSubscriber", back_populates='db', cascade="all, delete, delete-orphan")
+    incidents = relationship("Incident", back_populates='db', cascade="all, delete, delete-orphan")
 
     def __repr__(self):
         return f'{self.id}|{self.title}'
@@ -146,7 +150,7 @@ class Incident(Base):
     error = Column(JSON)
     date = Column(DateTime)
 
-    alerts = relationship("Alert", backref='incident', cascade="all, delete, delete-orphan")
+    alerts = relationship("Alert", back_populates='incident', cascade="all, delete, delete-orphan")
     db = relationship("DB", back_populates="incidents")
 
     def __repr__(self):
@@ -170,3 +174,9 @@ class Alert(Base):
 
 if __name__ == '__main__':
     Base.metadata.create_all(engine)
+    with Session() as session:
+        org = session.query(Organization).filter(Organization.title == 'main').first()
+        if org is None:
+            org = Organization(title='main')
+            session.add(org)
+            session.commit()
