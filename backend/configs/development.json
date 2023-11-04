@@ -1,0 +1,13 @@
+{
+  "database": {
+    "address": "90.150.183.80",
+    "user": "postgres",
+    "password": "pspu!Team",
+    "dbname": "hackathon",
+    "port": "10100"
+  },
+  "server": {
+    "address": "localhost",
+    "port": "8080"
+  }
+}
