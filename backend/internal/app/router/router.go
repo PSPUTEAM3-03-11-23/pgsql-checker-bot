@@ -36,5 +36,12 @@ func InitRoutes(r *gin.Engine) *gin.Engine {
 		alertsGroup.GET("/:id", middleware.BasicAuth, alertHandler.Get)
 	}
 
+	userRepo := repository.NewUserRepository(storage)
+	authService := service.NewAuthService(userRepo)
+	authHandler := handler.NewAuthHandler(authService)
+	authGroup := api.Group("auth")
+	{
+		authGroup.POST("/login", authHandler.Login)
+	}
 	return r
 }
