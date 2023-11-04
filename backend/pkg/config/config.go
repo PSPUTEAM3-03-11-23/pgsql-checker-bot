@@ -35,7 +35,7 @@ func initFlags() {
 	dbPass := flag.String("dbPass", "", "database.password")
 	dbName := flag.String("dbName", "", "database.dbname")
 	dbPort := flag.String("dbPort", "", "database.port")
-	srvAddr := flag.String("srvAddr", "", "server.address")
+	srvAddr := flag.String("srvAddr", "localhost", "server.address")
 	srvPort := flag.String("srvPort", "", "server.port")
 
 	flag.Parse()

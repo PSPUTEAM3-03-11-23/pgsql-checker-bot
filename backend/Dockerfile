@@ -9,6 +9,6 @@ RUN go mod download
 
 COPY . .
 
-WORKDIR cmd/it_planet_task
+WORKDIR cmd/hackathon-tg-bot
 
 RUN go build
