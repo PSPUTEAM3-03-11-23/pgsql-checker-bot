@@ -13,6 +13,7 @@ type DatabaseService interface {
 	GetAll() (*[]response.Database, *errorHandler.HttpErr)
 	Get(id int) (*response.Database, *errorHandler.HttpErr)
 	Create(databaseInput *input.Database) (*response.Database, *errorHandler.HttpErr)
+	Edit(databaseInput *input.Database, id int) (*response.Database, *errorHandler.HttpErr)
 	Delete(id int) (*bool, *errorHandler.HttpErr)
 }
 
@@ -87,4 +88,26 @@ func (d *DatabaseHandler) Delete(c *gin.Context) {
 	} else {
 		c.Status(http.StatusBadRequest)
 	}
+}
+
+func (d *DatabaseHandler) Edit(c *gin.Context) {
+	databaseInput := &input.Database{}
+	err := c.BindJSON(&databaseInput)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, err.Error())
+		return
+	}
+	id, httpErr := validator.ValidateAndReturnId(c.Param("id"), "id")
+	if httpErr != nil {
+		c.AbortWithStatusJSON(httpErr.StatusCode, httpErr.Err.Error())
+		return
+	}
+
+	database, httpErr := d.databaseService.Edit(databaseInput, id)
+	if err != nil {
+		c.AbortWithStatusJSON(httpErr.StatusCode, httpErr.Err.Error())
+		return
+	}
+
+	c.JSON(http.StatusCreated, database)
 }

@@ -14,6 +14,7 @@ type DatabaseRepository interface {
 	GetAll() (*[]entity.Database, error)
 	Get(int) (*entity.Database, error)
 	Create(databaseInput *input.Database) (*entity.Database, error)
+	Edit(databaseInput *input.Database, id int) (*entity.Database, error)
 	Delete(id int) (bool, error)
 }
 type DatabaseService struct {
@@ -73,4 +74,16 @@ func (d *DatabaseService) Delete(id int) (*bool, *errorHandler.HttpErr) {
 		return nil, errorHandler.New(fmt.Sprintf("Database with id %d does not exists", id), http.StatusNotFound)
 	}
 	return &ok, nil
+}
+
+func (d *DatabaseService) Edit(databaseInput *input.Database, id int) (*response.Database, *errorHandler.HttpErr) {
+	databaseResponse := &response.Database{}
+
+	database, err := d.databaseRepo.Edit(databaseInput, id)
+	if err != nil {
+		return nil, errorHandler.New(err.Error(), http.StatusBadRequest)
+	}
+	databaseResponse = mapper.DatabaseToDatabaseResponse(database)
+
+	return databaseResponse, nil
 }

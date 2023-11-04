@@ -74,3 +74,15 @@ func (a *DatabaseRepository) Delete(id int) (bool, error) {
 
 	return false, nil
 }
+
+func (a *DatabaseRepository) Edit(databaseInput *input.Database, id int) (*entity.Database, error) {
+	a.db.QueryRow("UPDATE dbs SET host= $1, port= $2,username =  $3, password = $4, db_name =  $5,schema = $6,title =  $7 WHERE id = $8",
+		databaseInput.Host, databaseInput.Port, databaseInput.Username, databaseInput.Password, databaseInput.DbName, databaseInput.Schema, databaseInput.Title, id)
+
+	e, err := a.Get(id)
+	if err != nil {
+		return nil, err
+	}
+
+	return e, nil
+}
