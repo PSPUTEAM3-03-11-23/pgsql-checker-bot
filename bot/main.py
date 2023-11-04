@@ -1,6 +1,6 @@
 import os
 
-from bot.menu.routes import Routes
+from bot.menu.pages import Pages
 
 from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes, ConversationHandler, \
     MessageHandler
@@ -42,7 +42,7 @@ async def inviteInput(update: Update, context: ContextTypes.DEFAULT_TYPE):
         #TODO: Вынести в отдельный блок
         await context.bot.send_message(chat_id=update.effective_chat.id,
                                        text="Выберите пункт меню:",
-                                       reply_markup=Routes.SUPER_ADMIN_MAIN_PAGE)
+                                       reply_markup=Pages.admin_main_page)
 
 
         return MAIN_PAGE
