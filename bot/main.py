@@ -9,14 +9,6 @@ from telegram.ext.filters import TEXT, COMMAND
 
 FIO, SECRET_CODE, INVITE_CODE, MAIN_PAGE = range(4)
 
-# from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, Bot, \
-#     InputMediaPhoto
-# from telegram.ext.filters import TEXT, COMMAND, PHOTO
-
-
-from sql_alchemy.models import Session, User, OrganizationInviteCode, UserSecret
-
-
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await context.bot.send_message(chat_id=update.effective_chat.id,
                                    text="Введите ФИО")
@@ -39,10 +31,11 @@ async def secretInput(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def inviteInput(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.message.text == 'Da':
-        #TODO: Вынести в отдельный блок
+        # while True:
+            #TODO: Вынести в отдельный блок
         await context.bot.send_message(chat_id=update.effective_chat.id,
-                                       text="Выберите пункт меню:",
-                                       reply_markup=Pages.admin_main_page)
+                                           text="Выберите пункт меню:",
+                                           reply_markup=Pages.admin_main_page)
 
 
         return MAIN_PAGE
