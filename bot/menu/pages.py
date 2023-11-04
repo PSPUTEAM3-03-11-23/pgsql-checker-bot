@@ -1,12 +1,10 @@
 from telegram import InlineKeyboardButton
-from bot.menu.paths import Paths
 
 class Pages:
     admin_main_page = [
         [
             InlineKeyboardButton('Генерация кода приглашения', callback_data='admin_generate_invite_code_page')
         ],
-        [InlineKeyboardButton('Чек бд', callback_data='check_bd')],
         [
             InlineKeyboardButton('Базы данных', callback_data='generate_invite_code_page')
         ],
