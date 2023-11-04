@@ -59,3 +59,18 @@ func (a *DatabaseRepository) Create(databaseInput *input.Database) (*entity.Data
 
 	return e, nil
 }
+
+func (a *DatabaseRepository) Delete(id int) (bool, error) {
+	res, err := a.db.Exec("DELETE FROM dbs WHERE id=$1", id)
+	if err == nil {
+		count, err := res.RowsAffected()
+		if err == nil {
+			if count > 0 {
+				return true, nil
+			}
+		}
+
+	}
+
+	return false, nil
+}

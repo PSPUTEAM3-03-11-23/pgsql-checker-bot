@@ -24,6 +24,7 @@ func InitRoutes(r *gin.Engine) *gin.Engine {
 		databasesGroup.GET("/", middleware.BasicAuth, databaseHandler.GetAll)
 		databasesGroup.GET("/:id", middleware.BasicAuth, databaseHandler.Get)
 		databasesGroup.POST("/", middleware.BasicAuth, databaseHandler.Create)
+		databasesGroup.DELETE("/:id", middleware.BasicAuth, databaseHandler.Delete)
 	}
 	incidentRepo := repository.NewIncidentRepository(storage, databaseRepo)
 

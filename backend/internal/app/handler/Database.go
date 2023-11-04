@@ -13,6 +13,7 @@ type DatabaseService interface {
 	GetAll() (*[]response.Database, *errorHandler.HttpErr)
 	Get(id int) (*response.Database, *errorHandler.HttpErr)
 	Create(databaseInput *input.Database) (*response.Database, *errorHandler.HttpErr)
+	Delete(id int) (*bool, *errorHandler.HttpErr)
 }
 
 type DatabaseHandler struct {
@@ -67,4 +68,23 @@ func (d *DatabaseHandler) Create(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, database)
+}
+
+func (d *DatabaseHandler) Delete(c *gin.Context) {
+	id, httpErr := validator.ValidateAndReturnId(c.Param("id"), "id")
+	if httpErr != nil {
+		c.AbortWithStatusJSON(httpErr.StatusCode, httpErr.Err.Error())
+		return
+	}
+	ok, httpErr := d.databaseService.Delete(id)
+	if httpErr != nil {
+		c.AbortWithStatusJSON(httpErr.StatusCode, httpErr.Err.Error())
+		return
+	}
+
+	if *ok {
+		c.Status(http.StatusOK)
+	} else {
+		c.Status(http.StatusBadRequest)
+	}
 }

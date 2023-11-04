@@ -32,14 +32,14 @@ func GetAccountByCreds(c *gin.Context) (*entity.User, error) {
 
 // BasicAuth middleware для basic auth
 func BasicAuth(c *gin.Context) {
-	//acc, err := GetAccountByCreds(c)
+	//user, err := GetAccountByCreds(c)
 	//
-	//if err != nil || acc == nil {
+	//if err != nil || user == nil {
 	//	c.AbortWithStatus(http.StatusUnauthorized)
 	//	c.Next()
 	//	return
 	//}
 	//
-	//c.Set("account", acc)
+	//c.Set("user", user)
 	c.Next()
 }
