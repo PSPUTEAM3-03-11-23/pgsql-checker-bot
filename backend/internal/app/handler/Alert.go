@@ -2,6 +2,7 @@ package handler
 
 import (
 	"github.com/gin-gonic/gin"
+	"hackathon-tg-bot/internal/app/model/entity"
 	"hackathon-tg-bot/internal/app/model/response"
 	"hackathon-tg-bot/internal/app/validator"
 	"hackathon-tg-bot/pkg/errorHandler"
@@ -9,8 +10,8 @@ import (
 )
 
 type AlertService interface {
-	GetAll() (*[]response.Alert, *errorHandler.HttpErr)
-	Get(id int) (*response.Alert, *errorHandler.HttpErr)
+	GetAll(user *entity.User) (*[]response.Alert, *errorHandler.HttpErr)
+	Get(id int, user *entity.User) (*response.Alert, *errorHandler.HttpErr)
 }
 
 type AlertHandler struct {
@@ -22,7 +23,10 @@ func NewAlertHandler(alertService AlertService) *AlertHandler {
 }
 
 func (d *AlertHandler) GetAll(c *gin.Context) {
-	alert, httpErr := d.alertService.GetAll()
+	userAny, _ := c.Get("user")
+	user := userAny.(*entity.User)
+
+	alert, httpErr := d.alertService.GetAll(user)
 	if httpErr != nil {
 		c.AbortWithStatusJSON(httpErr.StatusCode, httpErr.Err.Error())
 		return
@@ -37,7 +41,10 @@ func (d *AlertHandler) Get(c *gin.Context) {
 		return
 	}
 
-	alert, httpErr := d.alertService.Get(id)
+	userAny, _ := c.Get("user")
+	user := userAny.(*entity.User)
+
+	alert, httpErr := d.alertService.Get(id, user)
 	if httpErr != nil {
 		c.AbortWithStatusJSON(httpErr.StatusCode, httpErr.Err.Error())
 		return

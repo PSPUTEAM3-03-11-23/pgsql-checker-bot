@@ -17,8 +17,8 @@ func NewAlertRepository(s *postgres.Storage, incidentRepository *IncidentReposit
 	}
 }
 
-func (a *AlertRepository) GetAll() (*[]entity.Alert, error) {
-	rows, err := a.db.Query("select id, incident_id, is_sent from alerts")
+func (a *AlertRepository) GetAll(user *entity.User) (*[]entity.Alert, error) {
+	rows, err := a.db.Query("select id, incident_id, is_sent from alerts WHERE user_id = $1", user.Id)
 	if err != nil {
 		return nil, err
 	}
@@ -38,8 +38,8 @@ func (a *AlertRepository) GetAll() (*[]entity.Alert, error) {
 	return &alerts, nil
 }
 
-func (a *AlertRepository) Get(id int) (*entity.Alert, error) {
-	row := a.db.QueryRow("select id, incident_id, is_sent from alerts WHERE id = $1", id)
+func (a *AlertRepository) Get(id int, user *entity.User) (*entity.Alert, error) {
+	row := a.db.QueryRow("select id, incident_id, is_sent from alerts WHERE id = $1 AND user_id = $2", id, user.Id)
 
 	var d entity.Alert
 	var incidentId int

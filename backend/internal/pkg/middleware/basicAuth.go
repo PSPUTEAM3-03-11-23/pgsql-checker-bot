@@ -7,6 +7,7 @@ import (
 	"hackathon-tg-bot/internal/app/model/input"
 	"hackathon-tg-bot/internal/app/repository"
 	"hackathon-tg-bot/internal/app/storage/postgres"
+	"net/http"
 )
 
 func DecodeCredentials(c *gin.Context) (string, string, bool) {
@@ -32,14 +33,14 @@ func GetAccountByCreds(c *gin.Context) (*entity.User, error) {
 
 // BasicAuth middleware для basic auth
 func BasicAuth(c *gin.Context) {
-	//user, err := GetAccountByCreds(c)
-	//
-	//if err != nil || user == nil {
-	//	c.AbortWithStatus(http.StatusUnauthorized)
-	//	c.Next()
-	//	return
-	//}
-	//
-	//c.Set("user", user)
+	user, err := GetAccountByCreds(c)
+
+	if err != nil || user == nil {
+		c.AbortWithStatus(http.StatusUnauthorized)
+		c.Next()
+		return
+	}
+
+	c.Set("user", user)
 	c.Next()
 }
