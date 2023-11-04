@@ -1,7 +1,12 @@
 package middleware
 
 import (
+	"errors"
 	"github.com/gin-gonic/gin"
+	"hackathon-tg-bot/internal/app/model/entity"
+	"hackathon-tg-bot/internal/app/model/input"
+	"hackathon-tg-bot/internal/app/repository"
+	"hackathon-tg-bot/internal/app/storage/postgres"
 )
 
 func DecodeCredentials(c *gin.Context) (string, string, bool) {
@@ -9,30 +14,27 @@ func DecodeCredentials(c *gin.Context) (string, string, bool) {
 	return r.BasicAuth()
 }
 
-//
-//func GetAccountByCreds(c *gin.Context) (*entity.Account, error) {
-//	login, password, ok := DecodeCredentials(c)
-//	if !ok {
-//		return nil, errors.New("")
-//	}
-//
-//	account := &entity.Account{
-//		Email:    login,
-//		Password: password,
-//	}
-//
-//	accountRepo := repository.NewAccountRepository(helpers.GetConnectionOrCreateAndGet())
-//	accountService := service.NewAccountService(accountRepo)
-//
-//	return accountService.GetByCreds(account), nil
-//
-//}
+func GetAccountByCreds(c *gin.Context) (*entity.User, error) {
+	login, password, ok := DecodeCredentials(c)
+	if !ok {
+		return nil, errors.New("")
+	}
+
+	loginInput := &input.Login{
+		Email:    &login,
+		Password: &password,
+	}
+	storage, _ := postgres.Get()
+	userRepo := repository.NewUserRepository(storage)
+	user, _ := userRepo.GetByCreds(loginInput)
+	return user, nil
+}
 
 // BasicAuth middleware для basic auth
 func BasicAuth(c *gin.Context) {
 	//acc, err := GetAccountByCreds(c)
 	//
-	//if err != nil || acc.Id == 0 {
+	//if err != nil || acc == nil {
 	//	c.AbortWithStatus(http.StatusUnauthorized)
 	//	c.Next()
 	//	return

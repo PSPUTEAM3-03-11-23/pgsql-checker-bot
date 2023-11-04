@@ -7,6 +7,8 @@ import (
 	"hackathon-tg-bot/pkg/config"
 )
 
+var storage *Storage
+
 type Storage struct {
 	db *sql.DB
 }
@@ -29,11 +31,18 @@ func BuildPostgresConnectionString() string {
 	return ConnectionString
 }
 
-func New() (*Storage, error) {
-	connStr := BuildPostgresConnectionString()
-	db, err := sql.Open("postgres", connStr)
-	if err != nil {
-		panic(err)
+func Get() (*Storage, error) {
+	var db *sql.DB
+	var err error
+	if storage == nil {
+		connStr := BuildPostgresConnectionString()
+		db, err = sql.Open("postgres", connStr)
+		storage = &Storage{db: db}
+		if err != nil {
+			panic(err)
+		}
+	} else {
+		return storage, nil
 	}
 
 	//_, err = db.Exec(`CREATE EXTENSION IF NOT EXISTS "pgcrypto";

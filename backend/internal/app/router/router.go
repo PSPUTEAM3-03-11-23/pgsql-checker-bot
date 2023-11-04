@@ -12,7 +12,7 @@ import (
 // InitRoutes Инициализация путей эндпоинтов, сервисов и репозиториев
 func InitRoutes(r *gin.Engine) *gin.Engine {
 	api := r.Group("/api")
-	storage, err := postgres.New()
+	storage, err := postgres.Get()
 	if err != nil {
 		panic("cant connect to DB")
 	}
